@@ -67,7 +67,7 @@ void addUser(){
 
     printf("Enter id (Number): ");
     scanf("%d", &currUser.id);
-    fflush(stdin); // Removes '\n' From Buffer
+    getc(stdin); // Removes '\n' From Buffer
 
     if(currUser.id <= 0){
         printf("\nInvalid Id! (%d)\n\n", currUser.id);
@@ -138,7 +138,7 @@ void updateUser(){
     int id = -1;
     printf("Enter Id Of User: ");
     scanf("%d", &id);
-    fflush(stdin);
+    getc(stdin);
 
     if(!doesUserExits(id)){
         printf("\nUser With Id %d Does Not Exist\n\n", id);
@@ -174,7 +174,7 @@ void deleteUser(){
     int id = -1;
     printf("Enter Id Of User: ");
     scanf("%d", &id);
-    fflush(stdin); 
+    getc(stdin); 
 
     if(!doesUserExits(id)){
        printf("\nUser With Id %d Does Not Exist\n\n", id);
