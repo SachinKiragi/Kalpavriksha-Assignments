@@ -17,9 +17,10 @@ int createFile(){
     if(filePtr!=NULL){
         fclose(filePtr);
         return 1;
+    } else {
+        printf("Error While Creating The File\n");
+        return 0;
     }
-    printf("Error While Creating The File\n");
-    return 0;
 }
 
 int length(char *s){
@@ -36,7 +37,9 @@ void appendUserIntoFile(FILE* filePtr, User currUser){
 }
 
 int doesUserExits(int id){
+
     FILE* filePtr = fopen(fileName, "r");
+
     if(filePtr==NULL) {
         printf("\nError While Opening The File\n");
         return 0;
@@ -57,7 +60,9 @@ int doesUserExits(int id){
 }
 
 void addUser(){
+
     FILE* filePtr = fopen(fileName, "a");
+
     if(filePtr==NULL){
         printf("error");
         return;
@@ -83,13 +88,15 @@ void addUser(){
 
     printf("Enter Name: ");
     fgets(currUser.name, MAXLEN, stdin);
+
     int len = length(currUser.name);
     
     if(len <= 1){
-        printf("\nInvalid Name! (\\n)\n\n");
+        printf("\nInvalid Name! (\\n)\n\n"); // True When User Presses Enter Key
         fclose(filePtr);
         return;
     }
+
     currUser.name[len-1] = 0;
 
     printf("Enter Age: ");
@@ -100,19 +107,23 @@ void addUser(){
         fclose(filePtr);
         return;
     }
+    
     appendUserIntoFile(filePtr, currUser);
     fclose(filePtr);
     printf("\nUser Added Successfully\n\n");
 }
 
 void readUsers(){
+
     FILE* filePtr = fopen(fileName, "r");
+
     if(filePtr==NULL){
         printf("\nNo Users Found.\n");
         return;
     }
 
     printf("\n");
+
     User currUser;
 
     int noOfUsers = 0;
@@ -135,7 +146,9 @@ void readUsers(){
 }
 
 void updateUser(){
+
     int id = -1;
+
     printf("Enter Id Of User: ");
     scanf("%d", &id);
     getc(stdin);
@@ -171,7 +184,9 @@ void updateUser(){
 }
 
 void deleteUser(){
+
     int id = -1;
+
     printf("Enter Id Of User: ");
     scanf("%d", &id);
     getc(stdin); 
@@ -185,6 +200,7 @@ void deleteUser(){
     FILE* tempFilePtr = fopen(tempFileName, "w");
 
     User currUser;
+
     while(fscanf(filePtr, "%d, %[^,], %d\n", &currUser.id, currUser.name, &currUser.age) == 3){
         if(currUser.id != id){
             appendUserIntoFile(tempFilePtr, currUser);
@@ -199,11 +215,18 @@ void deleteUser(){
 }
 
 int main(){
+
     createFile();
+
     do{
         int op = -1;
-        printf("\nEnter Operation: \n1-Add User\n2-Read Users\n3-Update User\n4-Delete User\n5-Exit\n");
-        
+        printf("\nEnter Operation: \n");
+        printf("1-Add User\n");
+        printf("2-Read Users\n");
+        printf("3-Update User\n");
+        printf("4-Delete User\n");
+        printf("5-Exit\n");
+
         if(scanf("%d", &op)==0){ // Handles If User Enters any char Instead Of Int
             printf("\nInvalid Input Plz Enter Integer In The Raneg [1-5]\n\n");
             fflush(stdin);
@@ -219,9 +242,8 @@ int main(){
             case 3: updateUser();
                     break;
             case 4: deleteUser();
-                    break;
-            case 5: 
-                    printf("\nExiting Successfully!\n\n");
+                    break;  
+            case 5: printf("\nExiting Successfully!\n\n");
                     return 0;
             default: printf("\nInvalid Choice! Try Again\n");
         }
