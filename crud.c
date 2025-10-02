@@ -63,11 +63,11 @@ void addUser(){
         return;
     }
 
-    User currUser;
+    User currUser = {.id=-1};
 
     printf("Enter id (Number): ");
     scanf("%d", &currUser.id);
-    fflush(stdin);
+    fflush(stdin); // Removes '\n' From Buffer
 
     if(currUser.id <= 0){
         printf("\nInvalid Id! (%d)\n\n", currUser.id);
@@ -134,7 +134,7 @@ void readUsers(){
 }
 
 void updateUser(){
-    int id;
+    int id = -1;
     printf("Enter Id Of User: ");
     scanf("%d", &id);
     fflush(stdin);
@@ -170,9 +170,10 @@ void updateUser(){
 }
 
 void deleteUser(){
-    int id;
+    int id = -1;
     printf("Enter Id Of User: ");
     scanf("%d", &id);
+    fflush(stdin); 
 
     if(!doesUserExits(id)){
        printf("\nUser With Id %d Does Not Exist\n\n", id);
@@ -199,9 +200,15 @@ void deleteUser(){
 int main(){
     createFile();
     do{
-        int op;
+        int op = -1;
         printf("\nEnter Operation: \n1-Add User\n2-Read Users\n3-Update User\n4-Delete User\n5-Exit\n");
-        scanf("%d", &op);
+        
+        if(scanf("%d", &op)==0){ // Handles If User Enters any char Instead Of Int
+            printf("\nInvalid Input Plz Enter Integer In The Raneg [1-5]\n\n");
+            fflush(stdin);
+            continue;
+        }
+        
 
         switch(op){
             case 1: addUser();
