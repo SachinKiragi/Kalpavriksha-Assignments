@@ -67,7 +67,7 @@ void addUser(){
 
     printf("Enter id (Number): ");
     scanf("%d", &currUser.id);
-    getc(stdin);
+    fflush(stdin);
 
     if(currUser.id <= 0){
         printf("\nInvalid Id! (%d)\n\n", currUser.id);
@@ -166,14 +166,13 @@ void updateUser(){
     fclose(tempFilePtr);
     remove(fileName);
     rename(tempFileName, fileName);
-    printf("\nUser Updated Successfully\n\n");
+    printf("\nUser With Id %d Updated Successfully\n\n", id);
 }
 
 void deleteUser(){
     int id;
     printf("Enter Id Of User: ");
     scanf("%d", &id);
-    getc(stdin);
 
     if(!doesUserExits(id)){
        printf("\nUser With Id %d Does Not Exist\n\n", id);
@@ -194,7 +193,7 @@ void deleteUser(){
     fclose(tempFilePtr);
     remove(fileName);
     rename(tempFileName, fileName);
-    printf("\nUser Deleted Successfully\n\n");
+    printf("\nUser With Id %d Deleted Successfully\n\n", id);
 }
 
 int main(){
