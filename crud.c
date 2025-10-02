@@ -36,7 +36,7 @@ void appendUserIntoFile(FILE* filePtr, User currUser){
         printf("\nError Occured While Storing User Data\n");
 }
 
-int doesUserExits(int id){
+int doesUserExist(int id){
 
     FILE* filePtr = fopen(fileName, "r");
 
@@ -80,7 +80,7 @@ void addUser(){
         return;
     }
 
-    if(doesUserExits(currUser.id)){
+    if(doesUserExist(currUser.id)){
         printf("\nUser With Id %d Exists Already!\n\n", currUser.id);
         fclose(filePtr);
         return;
@@ -153,7 +153,7 @@ void updateUser(){
     scanf("%d", &id);
     getc(stdin);
 
-    if(!doesUserExits(id)){
+    if(!doesUserExist(id)){
         printf("\nUser With Id %d Does Not Exist\n\n", id);
         return;
     }
@@ -196,7 +196,7 @@ void deleteUser(){
     scanf("%d", &id);
     getc(stdin); 
 
-    if(!doesUserExits(id)){
+    if(!doesUserExist(id)){
        printf("\nUser With Id %d Does Not Exist\n\n", id);
        return;
     }
