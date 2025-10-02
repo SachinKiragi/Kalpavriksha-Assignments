@@ -9,8 +9,8 @@ typedef struct
     int age;
 } User;
 
-char *fileName = "users.txt";
-char *tempFileName = "temp.txt";
+const char *fileName = "users.txt";
+const char *tempFileName = "temp.txt";
 
 int createFile(){
     FILE *filePtr = fopen(fileName, "a");
@@ -107,7 +107,7 @@ void addUser(){
         fclose(filePtr);
         return;
     }
-    
+
     appendUserIntoFile(filePtr, currUser);
     fclose(filePtr);
     printf("\nUser Added Successfully\n\n");
@@ -161,6 +161,11 @@ void updateUser(){
     FILE* filePtr = fopen(fileName, "r");
     FILE* tempFilePtr = fopen(tempFileName, "w");
 
+    if(!filePtr || !tempFilePtr){
+        printf("\nError Accessing File\n\n");
+        return;
+    }
+
     User currUser;
 
     while(fscanf(filePtr, "%d, %[^,], %d\n", &currUser.id, currUser.name, &currUser.age) == 3){
@@ -198,6 +203,11 @@ void deleteUser(){
 
     FILE* filePtr = fopen(fileName, "r");
     FILE* tempFilePtr = fopen(tempFileName, "w");
+
+    if(!filePtr || !tempFilePtr){
+        printf("\nError Accessing File\n\n");
+        return;
+    }
 
     User currUser;
 
