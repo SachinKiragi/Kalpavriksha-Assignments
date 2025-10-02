@@ -102,6 +102,7 @@ void addUser(){
     }
     appendUserIntoFile(filePtr, currUser);
     fclose(filePtr);
+    printf("\nUser Added Successfully\n\n");
 }
 
 void readUsers(){
