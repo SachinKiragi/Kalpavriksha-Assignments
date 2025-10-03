@@ -239,7 +239,7 @@ int main(){
 
         if(scanf("%d", &op)==0){ // Handles If User Enters any char Instead Of Int
             printf("\nInvalid Input Plz Enter Integer In The Raneg [1-5]\n\n");
-            fflush(stdin);
+            while(getchar()!='\n');
             continue;
         }
         
