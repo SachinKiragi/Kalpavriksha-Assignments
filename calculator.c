@@ -149,18 +149,10 @@ Error getCurrentNumber(char *expression, int* i, int len, int *currNumber){
     return err;
 }
 
-Error getLeftOperand(valueStack *values, int *left){
-    Error err = SUCCESS;
-    err = peekValue(values, left);
-    if(err == SUCCESS){
-        err = popValue(values);
-    }
-    return err;
-}
 
-Error getRightOperand(valueStack *values, int *right){
+Error getOperand(valueStack *values, int *operand){
     Error err = SUCCESS;
-    err = peekValue(values, right);
+    err = peekValue(values, operand);
     if(err == SUCCESS){
         err = popValue(values);
     }
@@ -185,10 +177,10 @@ Error evaluateTopOperator(valueStack *values, operatorStack *operators, int *res
 
     Error err = SUCCESS;
 
-    err = getRightOperand(values, &right);
+    err = getOperand(values, &right);
 
     if(err == SUCCESS){ // Extectutes Only If getRightOperand Returns SUCCESS
-        err = getLeftOperand(values, &left);
+        err = getOperand(values, &left);
     }
 
     if(err == SUCCESS){ // Extectutes Only If getLeftOperand Returns SUCCESS
