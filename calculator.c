@@ -101,7 +101,7 @@ int getSizeOfOperatorStack(operatorStack *operators){
 
 int length(char *s){
     int len = 0;
-    while(s[len]!='\0'){
+    while(s[len] != '\0'){
         len++;
     }
     return len;
@@ -109,7 +109,7 @@ int length(char *s){
 
 
 bool isSpace(char c){
-    return c==' ';
+    return c == ' ';
 }
 
 bool isDigit(char c){
@@ -117,11 +117,11 @@ bool isDigit(char c){
 }
 
 bool isOperator(char c){
-    return (c=='+' || c=='-' || c=='/' || c=='*');
+    return (c == '+' || c == '-' || c == '/' || c == '*');
 }
 
 int precedence(char op){
-    if(op=='/' || op == '*'){
+    if(op == '/' || op == '*'){
         return 2;
     } else{
         return 1;
@@ -140,7 +140,7 @@ Error getCurrentNumber(char *expression, int* i, int len, int *currNumber){
         (*i)++;
     }
 
-    if((*i)<len && !isDigit(expression[*i]) && !isOperator(expression[*i]) && !isSpace(expression[*i])){
+    if((*i) < len && !isDigit(expression[*i]) && !isOperator(expression[*i]) && !isSpace(expression[*i])){
         err = INVALID_EXPRESSION; // True For (eg: 2e3+4)
     } else{
         err = SUCCESS;
@@ -187,18 +187,18 @@ Error evaluateTopOperator(valueStack *values, operatorStack *operators, int *res
 
     err = getRightOperand(values, &right);
 
-    if(err==SUCCESS){ // Extectutes Only If getRightOperand Returns SUCCESS
+    if(err == SUCCESS){ // Extectutes Only If getRightOperand Returns SUCCESS
         err = getLeftOperand(values, &left);
     }
 
-    if(err==SUCCESS){ // Extectutes Only If getLeftOperand Returns SUCCESS
+    if(err == SUCCESS){ // Extectutes Only If getLeftOperand Returns SUCCESS
         err = getOperator(operators, &op);
     }
 
-    if(err!=SUCCESS) return err;
+    if(err != SUCCESS) return err;
 
     switch(op){
-        case '/': if(right==0){
+        case '/': if(right == 0){
                     err = DIVISION_BY_ZERO;
                   } else{
                     *result = left / right;
@@ -233,7 +233,7 @@ Error calculate(char* expression, int *result) {
     int isNegative = 0; // Indicator For Negative Operands (eg: -2*-2, 8/-2, -5+1)       
     
     if(isOperator(expression[i])){
-        if(expression[i]=='+' || expression[i]=='-'){ 
+        if(expression[i] == '+' || expression[i] == '-'){ 
             isNegative = (expression[i]=='-');
         } else{
             err = INVALID_EXPRESSION; // True For (eg: *9+1, /2+3);
@@ -241,7 +241,7 @@ Error calculate(char* expression, int *result) {
         i++;
     }
 
-    while(i<len && err == SUCCESS){
+    while(i < len && err == SUCCESS){
         if(!isDigit(expression[i]) && !isOperator(expression[i]) && !isSpace(expression[i])){
             err = INVALID_EXPRESSION; // Ture For (eg: 2+a*3)
             break;
@@ -253,7 +253,7 @@ Error calculate(char* expression, int *result) {
             int currNumber = 0;
             err = getCurrentNumber(expression, &i, len, &currNumber);
 
-            if(err!=SUCCESS) break;
+            if(err != SUCCESS) break;
 
             if(isNegative){
                 currNumber *= -1;
@@ -265,9 +265,9 @@ Error calculate(char* expression, int *result) {
 
         } else{
 
-            if(i>0 && isOperator(expression[i-1])){
-                if(expression[i]=='/' || expression[i]=='*') err = INVALID_EXPRESSION;// True For eg: 3/*4
-                else if(expression[i]=='-') isNegative = 1; // True For eg: 4/-2, 1-+2
+            if(i > 0 && isOperator(expression[i-1])){
+                if(expression[i] == '/' || expression[i] == '*') err = INVALID_EXPRESSION;// True For eg: 3/*4
+                else if(expression[i] == '-') isNegative = 1; // True For eg: 4/-2, 1-+2
                 i++;
                 continue;
             }
@@ -292,7 +292,7 @@ Error calculate(char* expression, int *result) {
                 }
             }
 
-            if(err!=SUCCESS) break; // Break If Any  Error Occurs While Parsing Number Or While Evaluating Current Top Operands
+            if(err != SUCCESS) break; // Break If Any  Error Occurs While Parsing Number Or While Evaluating Current Top Operands
             err = pushOperator(&operators, expression[i]);
             i++; 
         }
@@ -336,7 +336,7 @@ int main(){
         fgets(expression, MAX_LEN, stdin);
         expression[length(expression)-1] = 0;
         
-        if(expression[0]=='e') break; // If e(Exit) Is Given
+        if(expression[0] == 'e') break; // If e(Exit) Is Given
 
         err = calculate(expression, &result); // Evaluates The Expression And Stores The Resultant Values In Result Variable Else Returns Error
         if(err == SUCCESS){
