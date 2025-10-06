@@ -179,15 +179,15 @@ Error evaluateTopOperator(valueStack *values, operatorStack *operators, int *res
 
     err = getOperand(values, &right);
 
-    if(err == SUCCESS){ // Extectutes Only If getRightOperand Returns SUCCESS
+    if(err == SUCCESS){ // Executes Only If right Operand Is Fetched Successfully
         err = getOperand(values, &left);
     }
 
-    if(err == SUCCESS){ // Extectutes Only If getLeftOperand Returns SUCCESS
+    if(err == SUCCESS){ // Executes Only If left Operand Is Fetched Successfully
         err = getOperator(operators, &op);
     }
 
-    if(err != SUCCESS) return err;
+    if(err != SUCCESS) return err; // True If Any Error Occurs While Fetching The Opeartor OR Operands
 
     switch(op){
         case '/': if(right == 0){
