@@ -60,7 +60,7 @@ int length(char *s){
     return len;
 }
 
-//Appends The User Into The File currFile 
+
 bool appendUserIntoFile(User currUser){
     FILE* filePtr = fopen(fileName, "a");
     if(filePtr == NULL){
@@ -73,6 +73,7 @@ bool appendUserIntoFile(User currUser){
     }
 }
 
+//Checks If User With Given id Exists In users.txt
 bool doesUserExist(int id){
     FILE* filePtr = fopen(fileName, "r");
 
@@ -131,6 +132,7 @@ void getUserAge(User *currUser){
     getc(stdin);
 }
 
+// Function To Take User Data As Input
 Error inputUserInfo(User *currUser){
 
     getUserId(currUser);
