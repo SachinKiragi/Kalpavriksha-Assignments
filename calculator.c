@@ -260,7 +260,7 @@ int calculate(char* expression) {
     }
 
     while(i < len && result != errorCodeForValue){
-        if(isDigit(expression[i]) == false && isOperator(expression[i]) == false && isSpace(expression[i]) == false){
+        if(!isDigit(expression[i]) && !isOperator(expression[i]) && !isSpace(expression[i])){
             printf("\n%s\n\n", getErrorMessage(INVALID_EXPRESSION));
             result = errorCodeForValue; // Ture For (eg: 2+a*3)
             break;
@@ -289,7 +289,7 @@ int calculate(char* expression) {
 
         } else{
 
-            if(i > 0 && isOperator(expression[i-1]) == true){
+            if(i > 0 && isOperator(expression[i-1])){
                 if(expression[i] == '/' || expression[i] == '*'){
                     printf("\n%s\n\n", getErrorMessage(INVALID_EXPRESSION)); // True For eg: 3/*4
                     result = errorCodeForValue;
