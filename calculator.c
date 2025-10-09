@@ -38,7 +38,7 @@ typedef struct{
 } operatorStack; 
 
 
-// Pushes Number Into Value Stack, If Stack Is Empty It Retunrs False Else Return True
+// Pushes Number Into Value Stack, If Stack Is Full It Retunrs False Else Return True
 bool pushValue(valueStack *values, int currValue){
 
     if(values->top+1 == MAX_LEN){
