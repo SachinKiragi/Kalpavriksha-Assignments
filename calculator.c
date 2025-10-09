@@ -3,22 +3,33 @@
 
 #define MAX_LEN 10000
 
-// Since We cannot use -1 to signal an empty stack because -1 is a valid operand.
-// Therefore, PeekValue (and others) return an Error enum to indicate stack errors.
+const int errorCodeForValue = -1e9; // Returned As Error Indicator In Peek And Pop If Values Stack Is Empty
+const char errorCodeForOperator = '.'; // Returned As Error Indicator In Peek And Pop If Operator Stack Is Empty
+
 typedef enum{
     STACK_OVERFLOW,
     STACK_UNDERFLOW,
     DIVISION_BY_ZERO,
     INVALID_EXPRESSION,
-    SUCCESS
 } Error;
 
+
+const char* getErrorMessage(Error err) {
+    switch (err) {
+        case STACK_OVERFLOW: return "Error: Stack Overflow";
+        case STACK_UNDERFLOW: return "Error: Stack Underflow";
+        case DIVISION_BY_ZERO: return "Error: Division by Zero";
+        case INVALID_EXPRESSION: return "Error: Invalid Expression";
+        default: return "UnExpected Error Occured";
+    }
+}
 
 // Stack Structure To Store Operands
 typedef struct{
     int data[MAX_LEN];
     int top;
 } valueStack;
+
 
 // Stack Structure To Store Operators
 typedef struct{
@@ -27,77 +38,92 @@ typedef struct{
 } operatorStack; 
 
 
-Error pushValue(valueStack *values, int currValue){
-    Error err = SUCCESS;
+// Pushes Number Into Value Stack, If Stack Is Empty It Retunrs False Else Return True
+bool pushValue(valueStack *values, int currValue){
+
     if(values->top+1 == MAX_LEN){
-        err = STACK_OVERFLOW;
+        printf(getErrorMessage(STACK_OVERFLOW));
+        return false;
     } else{
         values->data[++values->top] = currValue;
+        return true;
     }
-    return err;
+
 }
 
+// returns The Top Element From Value Stack -> If Stack Is Empty -> Returns errorCodeForValue
+int peekValue(valueStack *values){
+    int topValue = errorCodeForValue;
 
-Error popValue(valueStack *values){
-    Error err = SUCCESS;
-    if(values->top == -1){
-        err =  STACK_UNDERFLOW;
+    if(values->top == -1) {
+        printf("\n%s\n\n", getErrorMessage(STACK_UNDERFLOW));
     } else{
+        topValue = values->data[values->top];
+    }
+
+    return topValue;
+}
+
+// Remove Top Elemenet From Value Stack And returns The Top Element Of Value Stack -> If Stack Is Empty -> Returns errorCodeForValue
+int popValue(valueStack *values){
+    int poppedValue = errorCodeForValue;
+
+    if(values->top == -1){
+        printf("\n%s\n\n", getErrorMessage(STACK_UNDERFLOW));
+    } else{
+        poppedValue = peekValue(values);
         --values->top;
     }
-    return err;
-}
 
-Error peekValue(valueStack *values, int *topVal){
-    Error err = SUCCESS;
-    if(values->top == -1) {
-        err = STACK_UNDERFLOW;
-    } else{
-        *topVal = values->data[values->top];
-    }
-    return err;
-}
-
-int getSizeOfValueStack(valueStack *values){
-    return values->top+1;
+    return poppedValue;
 }
 
 
-Error pushOperator(operatorStack *operators, char currOperator){
-    Error err = SUCCESS;
+bool pushOperator(operatorStack *operators, char currOperator){
+
     if(operators->top+1 == MAX_LEN){
-        err = STACK_OVERFLOW;
+        printf("\n%s\n\n", getErrorMessage(STACK_OVERFLOW));
+        return false;
     } else{
         operators->data[++operators->top] = currOperator;
+        return true;
     }
-    return err;
+
 }
 
+char peekOperator(operatorStack *operators){
+    char topOperator = errorCodeForOperator;
 
-Error popOperator(operatorStack *operators){
-    Error err = SUCCESS;
-    if(operators->top == -1){
-        err = STACK_UNDERFLOW;
+    if(operators->top == -1) {
+        printf("\n%s\n\n", getErrorMessage(STACK_UNDERFLOW));
     } else{
+        topOperator = operators->data[operators->top];
+    }
+
+    return topOperator;
+}
+
+char popOperator(operatorStack *operators){
+    char poppedOperator =  errorCodeForOperator;
+
+    if(operators->top == -1){
+        printf("\n%s\n\n", getErrorMessage(STACK_UNDERFLOW));
+    } else{
+        poppedOperator = peekOperator(operators);
         --operators->top;
     }
-    return err;
+
+    return poppedOperator;
 }
 
-Error peekOperator(operatorStack *operators, char *topOperator){
-    Error err = SUCCESS;
-    if(operators->top == -1) {
-        err = STACK_UNDERFLOW;
+// Return The Size Of Stack Based On Flag -> If Flag = 'v' Then Returns valuesStack Size Else returns OperatorStack Size
+int getSizeOfStack(void *stack, char flag){ 
+    if(flag == 'v'){
+        return ((valueStack*)(stack))->top+1;
     } else{
-        *topOperator = operators->data[operators->top];
+        return ((operatorStack*)(stack))->top+1;
     }
-    return err;
 }
-
-int getSizeOfOperatorStack(operatorStack *operators){
-    return operators->top+1;
-}
-
 
 int length(char *s){
     int len = 0;
@@ -128,93 +154,92 @@ int precedence(char op){
     } 
 }
 
-//Function To Convert a Number From String To Int
-Error getCurrentNumber(char *expression, int* i, int len, int *currNumber){
-
-    Error err = SUCCESS;
+//Function To Convert a Number From String To Int, If Some Error Occurrs It Return errorCodeForValue
+int getCurrentNumber(char *expression, int* i, int len){
+    int currNumber = 0;
 
     while((*i) < len && (isDigit(expression[*i]) || isSpace(expression[*i]))){ // isSpace Handles Test Cases Like -> 12 4+1
-        if(!isSpace(expression[*i])){ // If Current Char Is Space It Ignores
-            *currNumber = *currNumber * 10 + (expression[*i]-'0');
+        if(isSpace(expression[*i]) == false){ // If Current Char Is Space It Ignores
+            currNumber = currNumber * 10 + (expression[*i]-'0');
         }
         (*i)++;
     }
 
     if((*i) < len && !isDigit(expression[*i]) && !isOperator(expression[*i]) && !isSpace(expression[*i])){
-        err = INVALID_EXPRESSION; // True For (eg: 2e3+4)
-    } else{
-        err = SUCCESS;
+        printf("\n%s\n\n", getErrorMessage(INVALID_EXPRESSION)); // True For (eg: 2e3+4)
+        currNumber = errorCodeForOperator;
     }
-
-    return err;
+    return currNumber;
 }
 
 
-Error getOperand(valueStack *values, int *operand){
-    Error err = SUCCESS;
-    err = peekValue(values, operand);
-    if(err == SUCCESS){
-        err = popValue(values);
+int getOperand(valueStack *values){
+    int currOperand = 0;
+    currOperand = peekValue(values);
+    if(currOperand != errorCodeForValue){
+        popValue(values);
     }
-    return err;
+    return currOperand;
 }
 
-Error getOperator(operatorStack *operators, char *op){
-    Error err = SUCCESS;
-    err = peekOperator(operators, op);
-    if(err == SUCCESS) {
-        err = popOperator(operators);
+char getOperator(operatorStack *operators){
+    char currOperator;
+
+    currOperator = peekOperator(operators);
+    if(currOperator != errorCodeForOperator) {
+        popOperator(operators);
     }
-    return err;
+
+    return currOperator;
 }
 
-//Computes The Operation Based On Top 2 Oprands With Respect To Top Operator
-Error evaluateTopOperator(valueStack *values, operatorStack *operators, int *result){
-
+//Computes The Operation Based On Top 2 Oprands With Respect To Top Operator, If Any Error Occurs It Return errorCodeForValue
+int evaluateTopOperator(valueStack *values, operatorStack *operators){
     int right = 0;
     int left = 0;
     char op = '.';
+    int result = -1;
 
-    Error err = SUCCESS;
+    right = getOperand(values);
 
-    err = getOperand(values, &right);
-
-    if(err == SUCCESS){ // Executes Only If right Operand Is Fetched Successfully
-        err = getOperand(values, &left);
+    if(right != errorCodeForValue){ // Executes Only If right Operand Is Fetched Successfully
+        left = getOperand(values);
     }
 
-    if(err == SUCCESS){ // Executes Only If left Operand Is Fetched Successfully
-        err = getOperator(operators, &op);
+    if(left != errorCodeForValue){ // Executes Only If left Operand Is Fetched Successfully
+        op = getOperator(operators);
     }
 
-    if(err != SUCCESS) return err; // True If Any Error Occurs While Fetching The Opeartor OR Operands
-
+    if(op == errorCodeForOperator) return op; // True If Any Error Occurs While Fetching The Opeartor OR Operands
     switch(op){
         case '/': if(right == 0){
-                    err = DIVISION_BY_ZERO;
+                    printf("\n%s\n\n", getErrorMessage(DIVISION_BY_ZERO));
+                    result = errorCodeForValue;
                   } else{
-                    *result = left / right;
+                    result = left / right;
                   }
             break;
-        case '*': *result = left * right;
+        case '*': result = left * right;
             break;
-        case '+': *result = left + right;
+        case '+': result = left + right;
             break;
-        case '-': *result = left - right;
+        case '-': result = left - right;
             break;
     }
 
-    return err;
+    return result;
 }
 
 
-Error calculate(char* expression, int *result) {
+// Function To Calculate Result Of Expession, If Any Error Occurs It Returns errorCodeForValue
+int calculate(char* expression) {
 
-    Error err = SUCCESS;
+    int result = 0;
+
     int len = length(expression);
     if(len == 0){
-        err = INVALID_EXPRESSION;
-        return err;
+        printf("\n%s\n\n", getErrorMessage(INVALID_EXPRESSION));
+        return errorCodeForValue;
     }
 
     int i=0;
@@ -224,103 +249,116 @@ Error calculate(char* expression, int *result) {
 
     int isNegative = 0; // Indicator For Negative Operands (eg: -2*-2, 8/-2, -5+1)       
     
-    if(isOperator(expression[i])){
+    if(isOperator(expression[i]) == true){
         if(expression[i] == '+' || expression[i] == '-'){ 
             isNegative = (expression[i]=='-');
         } else{
-            err = INVALID_EXPRESSION; // True For (eg: *9+1, /2+3);
+            printf("\n%s\n\n", getErrorMessage(INVALID_EXPRESSION));
+            result = errorCodeForValue; // True For (eg: *9+1, /2+3);
         } 
         i++;
     }
 
-    while(i < len && err == SUCCESS){
-        if(!isDigit(expression[i]) && !isOperator(expression[i]) && !isSpace(expression[i])){
-            err = INVALID_EXPRESSION; // Ture For (eg: 2+a*3)
+    while(i < len && result != errorCodeForValue){
+        if(isDigit(expression[i]) == false && isOperator(expression[i]) == false && isSpace(expression[i]) == false){
+            printf("\n%s\n\n", getErrorMessage(INVALID_EXPRESSION));
+            result = errorCodeForValue; // Ture For (eg: 2+a*3)
             break;
-        } else if(isSpace(expression[i])){ 
+        } else if(isSpace(expression[i]) == true){ 
             i++;
             continue; // Neglecting Spaces
-        } else if(isDigit(expression[i])){
+        } else if(isDigit(expression[i]) == true){
 
             int currNumber = 0;
-            err = getCurrentNumber(expression, &i, len, &currNumber);
+            currNumber = getCurrentNumber(expression, &i, len);
 
-            if(err != SUCCESS) break;
+            if(currNumber == errorCodeForValue){
+                result  = errorCodeForValue;
+                break;
+            }
 
             if(isNegative){
                 currNumber *= -1;
                 isNegative = 0;
             }
 
-            err = pushValue(&values, currNumber);
-            if(err != SUCCESS) break;
+            if(pushValue(&values, currNumber) == false){ // Exeeutes If The Stack Is Full
+                result = errorCodeForOperator;
+                break;
+            };
 
         } else{
 
-            if(i > 0 && isOperator(expression[i-1])){
-                if(expression[i] == '/' || expression[i] == '*') err = INVALID_EXPRESSION;// True For eg: 3/*4
-                else if(expression[i] == '-') isNegative = 1; // True For eg: 4/-2, 1-+2
+            if(i > 0 && isOperator(expression[i-1]) == true){
+                if(expression[i] == '/' || expression[i] == '*'){
+                    printf("\n%s\n\n", getErrorMessage(INVALID_EXPRESSION)); // True For eg: 3/*4
+                    result = errorCodeForValue;
+                } else if(expression[i] == '-') {
+                    isNegative = 1; // True For eg: 4/-2, 1-+2
+                }
                 i++;
                 continue;
             }
 
-            while(getSizeOfOperatorStack(&operators) >= 1 && getSizeOfValueStack(&values) >= 2){
+            while(getSizeOfStack(&operators, 'o') >= 1 && getSizeOfStack(&values, 'v') >= 2){
+                
                 char topOp;
                 
-                err = peekOperator(&operators, &topOp);
-                if(err != SUCCESS) break;
+                topOp = peekOperator(&operators);
+                if(topOp == errorCodeForOperator) break;
 
                 if(precedence(topOp) >= precedence(expression[i])){
                     int currResult = 0;
 
-                    err = evaluateTopOperator(&values, &operators, &currResult); // Evalues Top Operands And Stores The Result In currResult
-                    if(err != SUCCESS) break;
+                    currResult = evaluateTopOperator(&values, &operators); // Evalues Top Operands And Stores The Result In currResult
+                    if(currResult == errorCodeForValue) break;
 
-                    err = pushValue(&values, currResult);
-                    if(err != SUCCESS) break;
-
+                    if(pushValue(&values, currResult) == false) {
+                        result = errorCodeForValue;
+                        break;
+                    };
                 } else {
                     break;
                 }
             }
-
-            if(err != SUCCESS) break; // Break If Any  Error Occurs While Parsing Number Or While Evaluating Current Top Operands
-            err = pushOperator(&operators, expression[i]);
+            
+            if(result == errorCodeForValue) break; // Break If Any  Error Occurs While Parsing Number Or While Evaluating Current Top Operands
+            if(pushOperator(&operators, expression[i]) == false){
+                result = errorCodeForValue;
+                break;
+            }
             i++; 
         }
     }
 
-    while(getSizeOfOperatorStack(&operators)>=1 && err == SUCCESS){
+    while(getSizeOfStack(&operators, 'o')>=1 && result != errorCodeForValue){
         int currResult = 0;
-        err = evaluateTopOperator(&values, &operators, &currResult);
-        if(err == SUCCESS) {
-            err = pushValue(&values, currResult);
+        currResult = evaluateTopOperator(&values, &operators);
+        if(currResult != errorCodeForValue) {
+            if(pushValue(&values, currResult) == false){ // If Stack Is Full
+                result = errorCodeForValue;
+            }
+        } else{
+            result = errorCodeForValue;
+            break;
         }
     }
 
-    if(err == SUCCESS){
-        err = peekValue(&values, result);
+    if(result != errorCodeForValue){
+        result = peekValue(&values);
     }
 
-   return err;
+   return result;
 
 }
 
-void printError(Error err) {
-    if(err == DIVISION_BY_ZERO){
-        printf("\n'Error: Division By Zero!'\n\n"); 
-    } else{
-        printf("\n'Error: Invalid Expression!'\n\n"); 
-    }
-}
+
 
 int main(){
 
     printf("Claculator App\n");
-
     char expression[MAX_LEN];
     int result = 0;
-    Error err = SUCCESS;
 
     while(1){
         printf("Enter mathematical expression (type 'e' to exit): ");
@@ -330,11 +368,9 @@ int main(){
         
         if(expression[0] == 'e') break; // If e(Exit) Is Given
 
-        err = calculate(expression, &result); // Evaluates The Expression And Stores The Resultant Values In Result Variable Else Returns Error
-        if(err == SUCCESS){
+        result = calculate(expression); // Evaluates The Expression And Stores The Resultant Values In Result Variable Else Returns Error
+        if(result != errorCodeForValue){
             printf("\n'%s = %d'\n\n", expression, result); 
-        } else{
-            printError(err);
         }
     }
 
