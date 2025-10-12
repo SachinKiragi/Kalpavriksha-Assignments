@@ -5,6 +5,10 @@
 #define NUMBER_OF_SUBJECTS 3
 #define MAX_NAME_LENGTH 100
 
+const float GRADE_A = 85.0;
+const float GRADE_B = 70.0;
+const float GRADE_C = 50.0;
+const float GRADE_D = 35.0;
 
 typedef struct {
     int rollNumber;
@@ -20,49 +24,39 @@ void getCurrentStudentInfo(studentInfo *currentStudent){
     scanf("%d %d %d", &currentStudent->marks[0], &currentStudent->marks[1], &currentStudent->marks[2]);
 }
 
-// Function Take Information Of All Students
-void getStudentsData(studentInfo* students, int noOfStudents){
-    for(int i=0; i<noOfStudents; i++){
-        getCurrentStudentInfo(&students[i]);
-    }
-}
-
 
 int getTotalMarks(int marks[NUMBER_OF_SUBJECTS]){
-    int totalMarks = marks[0] + marks[1] + marks[2];
+    int totalMarks = 0;
+
+    for(int i=0; i<NUMBER_OF_SUBJECTS; i++){
+        totalMarks += marks[i];
+    }
+
     return totalMarks;
 }
 
 
-float getAverageMarks(int totalMarks){
+float getAverageMarks(int marks[NUMBER_OF_SUBJECTS]){
+    int totalMarks = getTotalMarks(marks);
     float avgMarks = (float)(totalMarks) / NUMBER_OF_SUBJECTS;
     return avgMarks;
 }
 
 
 char getGrade(float averageMarks){
-    if(averageMarks >= 85){
+    if(averageMarks >= GRADE_A){
         return 'A';
-    } else if(averageMarks >= 70){
+    } else if(averageMarks >= GRADE_B){
         return 'B';
-    } else if(averageMarks >= 50){
+    } else if(averageMarks >= GRADE_C){
         return 'C';
-    } else if(averageMarks >= 35){
+    } else if(averageMarks >= GRADE_D){
         return 'D';
     } else{
         return 'F';
     }
 }
 
-
-void printStars(int stars){
-
-    printf("Performance: ");
-    for(int i=1; i<=stars; i++){
-        printf("*");
-    }
-    printf("\n");
-}
 
 void displayPerformancePattern(char grade){
 
@@ -81,7 +75,11 @@ void displayPerformancePattern(char grade){
             break;
     }
 
-    printStars(stars);
+    printf("Performance: ");
+    for(int i=1; i<=stars; i++){
+        printf("*");
+    }
+    printf("\n");
 
 }
 
@@ -92,7 +90,7 @@ void displayStudentsInfo(studentInfo *students, int noOfStudents){
     for(int i=0; i<noOfStudents; i++){
         
         int totalMarks = getTotalMarks(students[i].marks);
-        float averageMarks = getAverageMarks(totalMarks);
+        float averageMarks = getAverageMarks(students[i].marks);
         char grade = getGrade(averageMarks);
         
         printf("Roll: %d\n", students[i].rollNumber);
@@ -129,7 +127,11 @@ void displayRollNumbers(studentInfo* students, int noOfStudents){
 
 
 void analyzeStudentPerformance(studentInfo* students, int noOfStudents){
-    getStudentsData(students, noOfStudents);
+    
+    for(int i=0; i<noOfStudents; i++){
+        getCurrentStudentInfo(&students[i]);
+    }
+
     displayStudentsInfo(students, noOfStudents);
     displayRollNumbers(students, noOfStudents);
 }
