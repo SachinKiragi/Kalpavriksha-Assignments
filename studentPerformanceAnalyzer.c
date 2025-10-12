@@ -59,28 +59,21 @@ char getGrade(float averageMarks){
 
 
 void displayPerformancePattern(char grade){
-
-    int stars = 0;
+    printf("Performance: ");
     switch (grade)
     {
-        case 'A': stars = 5;
+        case 'A': printf("*****");
             break;
-        case 'B': stars = 4;
+        case 'B': printf("****");
             break;
-        case 'C': stars = 3;
+        case 'C': printf("***");
             break;
-        case 'D': stars = 2;
+        case 'D': printf("**");
             break;
         default:
             break;
     }
-
-    printf("Performance: ");
-    for(int i=1; i<=stars; i++){
-        printf("*");
-    }
     printf("\n");
-
 }
 
 
@@ -164,3 +157,4 @@ int main(){
     return 0;
 
 }
+
