@@ -5,62 +5,7 @@
 
 #define MIN_IMAGE_SIZE 2
 #define MAX_IMAGE_SIZE 10
-#define MAX_INPUT_LENGTH 100 // Used To Get Valid Integres From User
 #define MOD 256
-
-
-bool isDigit(char ch){
-    return ch >= '0' && ch <= '9';
-}
-
-
-bool isSpace(char ch){
-    return ch == ' ';
-}
-
-
-int stringToNumber(char *valueAsString, int length){
-
-    int valueAsInt = 0;
-    int i = 0;
-
-    while(i < length){
-        if(isDigit(valueAsString[i])){
-            valueAsInt = valueAsInt * 10 + (valueAsString[i] - '0');
-            i++;
-        } else if(isSpace(valueAsString[i])){
-            i++;
-        } else{
-            valueAsInt = -1;   
-            break;
-        }
-    }
-    return valueAsInt;
-}
-
-
-int getLength(char *valueAsString){
-    int i = 0;
-    while(valueAsString[i] != '\0'){
-        i++;
-    }
-    return i-1;
-}
-
-
-int getValidInteger(){
-    
-    char valueAsString[MAX_INPUT_LENGTH];
-    fgets(valueAsString, MAX_INPUT_LENGTH, stdin);
-
-    int length = getLength(valueAsString);
-    valueAsString[length] = 0;
-
-    int valueAsInt = stringToNumber(valueAsString, length);
-
-    return valueAsInt;
-
-}
 
 
 int getValueAtij(int ***image, int i, int j, int n){
@@ -219,7 +164,7 @@ void deAllocateMemory(int ***image, int n){
 int main(){
     int n = 0;
     do{
-        n = getValidInteger();
+        scanf("%d", &n);
         if(n < MIN_IMAGE_SIZE || n > MAX_IMAGE_SIZE){
             printf("Invalid Integer Input! The Range Should Be [2-10]: \n");
         }
