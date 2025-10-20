@@ -3,7 +3,8 @@
 #include<stdbool.h>
 #include<time.h>
 
-
+#define MIN_IMAGE_SIZE 2
+#define MAX_IMAGE_SIZE 10
 #define MAX_INPUT_LENGTH 100 // Used To Get Valid Integres From User
 #define MOD 256
 
@@ -219,10 +220,10 @@ int main(){
     int n = 0;
     do{
         n = getValidInteger();
-        if(n < 2 || n > 10){
+        if(n < MIN_IMAGE_SIZE || n > MAX_IMAGE_SIZE){
             printf("Invalid Integer Input! The Range Should Be [2-10]: \n");
         }
-    } while(n < 2 || n > 10);
+    } while(n < MIN_IMAGE_SIZE || n > MAX_IMAGE_SIZE);
 
     int*** image = (int***)malloc(n * (sizeof(int**)));
 
