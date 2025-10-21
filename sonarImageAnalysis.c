@@ -8,16 +8,16 @@
 #define MOD 256
 
 
-int getValueAtij(int ***image, int i, int j, int n){
+int getValueAtij(int **image, int i, int j, int n){
     if(i < 0 || i >= n || j < 0 || j >= n) {
         return -1;
     } else{
-        return (*(*(*(image + i) + j)));
+        return *(*(image + i) + j);
     }
 }
 
 
-void printImage(int ***image, int n){
+void printImage(int **image, int n){
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
             int value = getValueAtij(image, i, j, n) % MOD;
@@ -29,30 +29,28 @@ void printImage(int ***image, int n){
 }
 
 
-void initializeImage(int ***image, int n){
+void initializeImage(int **image, int n){
     
     srand(time(NULL));
     
     for(int i = 0; i < n; i++){
-        *(image + i) = (int**)malloc(n * sizeof(int*));
+        *(image + i) = (int*)(malloc(n * sizeof(int)));
         for(int j = 0; j < n; j++){
-            *((*(image + i)) + j) = (int*)malloc(sizeof(int));
-            int *addressAtij = (*(*(image + i) + j));
-            *addressAtij = rand() % MOD;
+            *(*(image + i) + j) = rand() % MOD;
         }
     }
 }
 
 
 // Swapping Adresses 
-void swap(int **value1, int **value2){
-    int *temp = *value1;
+void swap(int *value1, int *value2){
+    int temp = *value1;
     *value1 = *value2;
     *value2 = temp;
 }
 
 
-void reverseCurrentRow(int **image, int n){
+void reverseCurrentRow(int *image, int n){
     int i = 0;
     int j = n - 1;
     while(i < j){
@@ -63,7 +61,7 @@ void reverseCurrentRow(int **image, int n){
 }
 
 
-void transposeImage(int ***image, int n){
+void transposeImage(int **image, int n){
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n-i; j++){
              swap((*(image + i) + j), (*(image + (n - j - 1)) + (n - i - 1)));
@@ -72,17 +70,15 @@ void transposeImage(int ***image, int n){
 }
 
 //Rotating Image 90 Degree Clockwise
-void rotateImage(int ***image, int n){
-    
+void rotateImage(int **image, int n){
     for(int i = 0; i < n; i++){
         reverseCurrentRow(*(image + i), n);
     }
-
     transposeImage(image, n);
 }
 
 
-void applySmoothingAtCurrentIndex(int ***image, int i, int j, int n){
+void applySmoothingAtCurrentIndex(int **image, int i, int j, int n){
     int rowDir[] = {0, -1, -1, -1, 0, 1, 1, 1, 0};
     int colDir[] = {0, -1, 0, 1, 1, 1, 0, -1, -1};
 
@@ -102,7 +98,7 @@ void applySmoothingAtCurrentIndex(int ***image, int i, int j, int n){
      int oldValue = getValueAtij(image, i, j, n) % MOD;
      int newValue = average * MOD + oldValue;
      
-     *(*((*(image + i)) + j)) = newValue;
+     *(*(image + i) + j) = newValue;
 
      /*
         Since We Need To Modify And Store Average In Place!
@@ -117,7 +113,7 @@ void applySmoothingAtCurrentIndex(int ***image, int i, int j, int n){
 } 
 
 
-void applySmoothingFilter(int ***image, int n){
+void applySmoothingFilter(int **image, int n){
 
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
@@ -128,7 +124,7 @@ void applySmoothingFilter(int ***image, int n){
 }
 
 
-void analayzeSonarImage(int ***image, int n){
+void analayzeSonarImage(int **image, int n){
 
     printf("Original\n");
     printImage(image, n);
@@ -142,7 +138,7 @@ void analayzeSonarImage(int ***image, int n){
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
             int value = getValueAtij(image, i, j, n);
-            *(*((*(image + i)) + j)) = value / MOD;
+            *((*(image + i)) + j) = value / MOD;
         }
     }
 
@@ -151,11 +147,8 @@ void analayzeSonarImage(int ***image, int n){
 }
 
 
-void deAllocateMemory(int ***image, int n){
+void deAllocateMemory(int **image, int n){
     for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-            free(*(*(image + i) + j));
-        }
         free(*(image + i));
     }
     free(image);
@@ -170,11 +163,10 @@ int main(){
         }
     } while(n < MIN_IMAGE_SIZE || n > MAX_IMAGE_SIZE);
 
-    int*** image = (int***)malloc(n * (sizeof(int**)));
+    int** image = (int**)malloc(n * (sizeof(int*)));
 
     initializeImage(image, n);
     analayzeSonarImage(image, n);
-
     deAllocateMemory(image, n);
   
     return 0;
