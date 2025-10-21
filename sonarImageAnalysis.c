@@ -50,11 +50,11 @@ void swap(int *value1, int *value2){
 }
 
 
-void reverseCurrentRow(int *image, int n){
+void reverseCurrentRow(int *currRow, int n){
     int i = 0;
     int j = n - 1;
     while(i < j){
-        swap(image + i, image + j);
+        swap(currRow + i, currRow + j);
         i++;
         j--;
     }
@@ -71,9 +71,11 @@ void transposeImage(int **image, int n){
 
 //Rotating Image 90 Degree Clockwise
 void rotateImage(int **image, int n){
+    
     for(int i = 0; i < n; i++){
         reverseCurrentRow(*(image + i), n);
     }
+
     transposeImage(image, n);
 }
 
@@ -138,7 +140,7 @@ void analayzeSonarImage(int **image, int n){
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
             int value = getValueAtij(image, i, j, n);
-            *((*(image + i)) + j) = value / MOD;
+            *(*(image + i) + j) = value / MOD;
         }
     }
 
