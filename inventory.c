@@ -137,19 +137,20 @@ void displayProducts(productInfo *products, int noOfProducts){
     }
 }
 
-void addNewProduct(productInfo** products, int *noOfProducts, int *capacity){
+statusCode addNewProduct(productInfo** products, int *noOfProducts, int *capacity){
     if((*capacity) == (*noOfProducts)){
         (*capacity) = (*noOfProducts) * 2;
         *products = (productInfo*)realloc(*products, *capacity * sizeof(productInfo));
         if(*products == NULL){
             printf("Memory Allocation Failed!\n");
-            return;
+            return FAILURE;
         }
     }
     int indexToInsertNewProduct = *noOfProducts;
     (*products)[indexToInsertNewProduct] = getCurrentProductInfo(*products, *noOfProducts);
     (*noOfProducts)++;
     printf("Product added successfully! \n");
+    return SUCCESS;
 }
 
 int getProductIndexById(productInfo* products, int noOfProducts, int id){
@@ -163,7 +164,7 @@ int getProductIndexById(productInfo* products, int noOfProducts, int id){
     return currentProductIndex;
 }
 
-void updateQuantity(productInfo* products, int noOfProducts){
+statusCode updateQuantity(productInfo* products, int noOfProducts){
     printf("Enter Product ID to update quantity: ");
     int id;
     scanf("%d", &id);
@@ -172,8 +173,10 @@ void updateQuantity(productInfo* products, int noOfProducts){
     if(currentProductIndex != -1){
         products[currentProductIndex].quantity = getProductQuantity();
         printf("Quantity updated successfully!\n");
+        return SUCCESS;
     } else{
         printf("Product With Id %d Does Not Exists\n", id);
+        return FAILURE;
     }
 }
 
@@ -265,7 +268,7 @@ void searchProductByPriceRange(productInfo* products, int noOfProducts){
     }
 }
 
-void deleteProduct(productInfo *products, int *noOfProducts, int *capacity){
+statusCode deleteProduct(productInfo *products, int *noOfProducts, int *capacity){
     printf("Enter Product ID to delete: ");
     int id;
     scanf("%d", &id);
@@ -277,8 +280,10 @@ void deleteProduct(productInfo *products, int *noOfProducts, int *capacity){
         }
         (*noOfProducts)--;
         printf("Product deleted successfully! \n");
+        return SUCCESS;
     } else{
         printf("No product found with id '%d'.\n", id);
+        return FAILURE;
     }
 }
 
@@ -311,11 +316,15 @@ void handleInventoryManagementSystem(int noOfProducts){
         scanf("%d", &choice);
         getchar();
         switch(choice){
-            case 1: addNewProduct(&products, &noOfProducts, &capacity);
+            case 1: if(addNewProduct(&products, &noOfProducts, &capacity) == FAILURE){
+                        printf("Error Occured While Updating The Product\n");  
+                    } 
                     break;
             case 2: displayProducts(products, noOfProducts);
                     break;
-            case 3: updateQuantity(products, noOfProducts);
+            case 3: if(updateQuantity(products, noOfProducts) == FAILURE){
+                        printf("Error Occured While Updating The Product\n");
+                    }
                     break;
             case 4: searchProductById(products, noOfProducts);
                     break;
@@ -323,7 +332,9 @@ void handleInventoryManagementSystem(int noOfProducts){
                     break;
             case 6: searchProductByPriceRange(products, noOfProducts);
                     break;
-            case 7: deleteProduct(products, &noOfProducts, &capacity);
+            case 7: if(deleteProduct(products, &noOfProducts, &capacity) == FAILURE){
+                        printf("Error Occured While Deleting The Product\n");
+                    }
                     break;
             case 8: free(products);
                     products = NULL;

@@ -11,6 +11,11 @@
 #define MIN_QUANTITY 0
 #define MAX_QUANTITY 1000000
 
+typedef enum{
+    SUCCESS,
+    FAILURE
+} statusCode;
+
 typedef struct {
     int productId;
     char name[MAX_NAME_LENGTH];
@@ -30,9 +35,9 @@ productInfo getCurrentProductInfo(productInfo*, int);
 // MENU BASED FUNCTIONS
 void displayCurrentProduct(productInfo*);
 void displayProducts(productInfo*, int);
-void addNewProduct(productInfo**, int*, int*);
+statusCode addNewProduct(productInfo**, int*, int*);
 int getProductIndexById(productInfo*, int, int);
-void updateQuantity(productInfo*, int);
+statusCode updateQuantity(productInfo*, int);
 void searchProductById(productInfo*, int);
 char toLower(char);
 bool isSame(char, char);
@@ -40,7 +45,7 @@ bool isMatchingPartially(char*, char*);
 void searchProductByName(productInfo*, int);
 void searchProductByPriceRange(productInfo*, int);
 void swap(productInfo*, productInfo*);
-void deleteProduct(productInfo*, int*, int*);
+statusCode deleteProduct(productInfo*, int*, int*);
 
 void handleInventoryManagementSystem(int);
 
