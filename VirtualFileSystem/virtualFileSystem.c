@@ -28,6 +28,8 @@ void releaseDiskMemory(char** disk){
         free(disk[i]);
         disk[i] = NULL;
     }
+    free(disk);
+    disk = NULL;
 }
 
 void releaseFreeBlocks(freeBlock* freeBlocksHead){
