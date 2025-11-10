@@ -79,6 +79,7 @@ void initVirtualFileSystem(){
         char command[MAX_COMMAND_LENGTH];
 
         fgets(line, sizeof(line), stdin);
+        line[strcspn(line, "\n")] = '\0';
         sscanf(line, "%s %s", command, name);
 
         if(strcmp(command, "mkdir") == 0 || strcmp(command, "create") == 0){
