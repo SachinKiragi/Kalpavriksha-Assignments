@@ -48,7 +48,7 @@ void releaseCurrentDirectoryMemory(fileNode* cwd, freeBlock **freeBlocksHead){
 
     char* command = cwd->isFile ? "delete" : "rmdir";
     char* name = cwd->name;
-    if(strcmp(name, "root") == 0){
+    if(cwd->parent == NULL){
         free(cwd);
         cwd = NULL;
     } else{
@@ -67,12 +67,7 @@ void initVirtualFileSystem(){
     fileNode* cwd = initRootDirectory();
 
     while(1){
-
-        if(strcmp(cwd->name, "root") != 0){
-            printf("%s> ", cwd->name);
-        } else{
-            printf("/> ");
-        }
+        strcmp(cwd->name, "root") != 0 ? printf("%s> ", cwd->name) : printf("/> ");
 
         char line[MAX_INPUT_LENGTH];
         char name[MAX_FILENODE_NAME_LENGTH];

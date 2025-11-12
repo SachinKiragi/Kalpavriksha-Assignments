@@ -20,7 +20,7 @@ void displaystatus(statusCode status){
     }
 }
 
-bool doesFileNodeExistsAlready(fileNode* cwd, char *name){
+bool fileNodeExists(fileNode* cwd, char *name){
     fileNode* curr = cwd->childrensHead;
     if(curr == NULL){
         return false;
@@ -78,15 +78,10 @@ fileNode* addNewFileNodeInCurrentDirectory(fileNode* childrensHead, fileNode* ne
 // Function To Insert New File/Directory Inside cwd (exectuted for cmd 'mkdir docs' or 'create notes.txt')
 statusCode insertNewFileNode(fileNode* cwd, char* name, char* command){
     fileNode* newFileNode = createNewFileNode();
-    if(doesFileNodeExistsAlready(cwd, name) == true){
+    if(fileNodeExists(cwd, name) == true){
         return FILENODE_EXISTS;
     }
-
-    if(strcmp(command, "mkdir") == 0){
-        newFileNode->isFile = false;
-    } else{
-        newFileNode->isFile = true;
-    }
+    newFileNode->isFile = strcmp(command, "mkdir") == 0 ? false : true;
     newFileNode->parent = cwd;
     strcpy(newFileNode->name, name);
     cwd->childrensHead = addNewFileNodeInCurrentDirectory(cwd->childrensHead, newFileNode);
@@ -131,7 +126,6 @@ statusCode deleteFileNode(fileNode* cwd, char* name, char* command, freeBlock** 
         return EMPTY_DIRECTORY;
     }
     fileNode* curr = cwd->childrensHead;
-    
     statusCode status = INIT;  
     if(curr == NULL){
         status = strcmp(command, "rmdir") == 0 ? DIRECTORY_NOT_FOUND : FILE_NOT_FOUND;
@@ -237,8 +231,7 @@ char* getPathOfCwd(fileNode* cwd){
         strcpy(path, temp);
         curr = curr->parent;
     }
-    char* finalPath;
-    strcpy(finalPath, path);
+    char* finalPath = strdup(path);
     finalPath[strlen(finalPath) - 1] = 0;
     return finalPath;
 }

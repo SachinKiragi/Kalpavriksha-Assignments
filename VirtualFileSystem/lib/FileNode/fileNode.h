@@ -29,7 +29,7 @@ typedef struct fileNode{
 
 
 void displaystatus(statusCode);
-bool doesFileNodeExistsAlready(fileNode*, char*);
+bool fileNodeExists(fileNode*, char*);
 fileNode* createNewFileNode();
 fileNode* getFileNode(fileNode*, char*);
 fileNode* addNewFileNodeInCurrentDirectory(fileNode*, fileNode*);
