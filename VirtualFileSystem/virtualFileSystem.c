@@ -23,6 +23,12 @@ freeBlock* initFreeBlocks(){
     return head;
 }
 
+void initMemory(VfsState* currVfsState){
+    currVfsState->disk = initVirtualDisk();
+    currVfsState->freeBlocksHead = initFreeBlocks();
+    currVfsState->cwd = initRootDirectory();   
+}
+
 void releaseDiskMemory(char** disk){
     for(int i = 0; i < MAX_NUMBER_OF_BLOCKS; i++){
         free(disk[i]);
@@ -34,16 +40,21 @@ void releaseDiskMemory(char** disk){
 
 void releaseFreeBlocks(freeBlock* freeBlocksHead){
     do{
+        freeBlock* temp = freeBlocksHead;
         freeBlocksHead = deleteAtHeadOfFreeBlocks(freeBlocksHead);
+        free(temp);
+        temp = NULL;
     } while(freeBlocksHead != NULL);
 }
 
-void releaseCurrentDirectoryMemory(fileNode* cwd, freeBlock **freeBlocksHead){
+void releaseCurrentDirectoryMemory(VfsState* currVfsState){
+    fileNode* cwd = currVfsState->cwd;
     if(cwd == NULL){
         return;
     }
     while(cwd && cwd->childrensHead){
-        releaseCurrentDirectoryMemory(cwd->childrensHead, freeBlocksHead); 
+        currVfsState->cwd = cwd->childrensHead;
+        releaseCurrentDirectoryMemory(currVfsState);
     }
 
     char* command = cwd->isFile ? "delete" : "rmdir";
@@ -51,23 +62,37 @@ void releaseCurrentDirectoryMemory(fileNode* cwd, freeBlock **freeBlocksHead){
     if(cwd->parent == NULL){
         free(cwd);
         cwd = NULL;
-    } else{
-        deleteFileNode(cwd->parent, name, command, freeBlocksHead);
+    } else {
+        currVfsState->cwd = currVfsState->cwd->parent;
+        deleteFileNode(currVfsState, name, command);
     }
+}
+
+void releaseMemory(VfsState* currVfsState){
+    releaseDiskMemory(currVfsState->disk);
+    releaseCurrentDirectoryMemory(currVfsState);
+    releaseFreeBlocks(currVfsState->freeBlocksHead);
+}
+
+fileNode* getRoot(fileNode* cwd){
+    if(cwd->parent == NULL){
+        return cwd;
+    }
+    return getRoot(cwd->parent);
 }
 
 void initVirtualFileSystem(){
 
-    printf("$ ./vfs \n");
-    printf("Compact VFS - ready. Type 'exit' to quit.\n");
+    printf("$ ./VfsState \n");
+    printf("Compact VfsState - ready. Type 'exit' to quit.\n");
 
     statusCode status = INIT;
-    char** disk = initVirtualDisk(); 
-    freeBlock* freeBlocksHead = initFreeBlocks();
-    fileNode* cwd = initRootDirectory();
+
+    VfsState *currVfsState = (VfsState*)malloc(sizeof(VfsState));
+    initMemory(currVfsState);
 
     while(1){
-        strcmp(cwd->name, "root") != 0 ? printf("%s> ", cwd->name) : printf("/> ");
+        strcmp(currVfsState->cwd->name, "root") != 0 ? printf("%s> ", currVfsState->cwd->name) : printf("/> ");
 
         char line[MAX_INPUT_LENGTH];
         char name[MAX_FILENODE_NAME_LENGTH];
@@ -78,35 +103,34 @@ void initVirtualFileSystem(){
         sscanf(line, "%s %s", command, name);
 
         if(strcmp(command, "mkdir") == 0 || strcmp(command, "create") == 0){
-            handleFileNodeInsertion(cwd, name, command);
+            handleFileNodeInsertion(currVfsState, name, command);
 
         } else if(strcmp(command, "rmdir") == 0 || strcmp(command, "delete") == 0){
-            handleFileNodeDeletion(cwd, name, command, &freeBlocksHead);
+            handleFileNodeDeletion(currVfsState, name, command);
 
         } else if(strcmp(command, "ls") == 0){
-            displaySubDirectoriesAndFiles(cwd);
+            displaySubDirectoriesAndFiles(currVfsState->cwd);
             
         } else if(strcmp(command, "cd") == 0){
-            cwd = handleChangeDirectory(cwd, name);
-            if(cwd->parent != NULL){
-                printf("Moved to /%s\n", getPathOfCwd(cwd));
+            handleChangeDirectory(currVfsState, name);
+            if(currVfsState->cwd->parent != NULL){
+                printf("Moved to /%s\n", getPathOfCwd(currVfsState->cwd));
             }
         } else if(strcmp(command, "write") == 0){
-            handleWriteCommand(cwd, command, name, line, &freeBlocksHead, disk);
+            handleWriteCommand(currVfsState, command, name, line);
 
         } else if(strcmp(command, "read") == 0){
-            displayFileContent(cwd, name, disk);
+            displayFileContent(currVfsState, name);
 
         } else if(strcmp(command, "pwd") == 0){
-            printf("/%s\n", getPathOfCwd(cwd));
+            printf("/%s\n", getPathOfCwd(currVfsState->cwd));
 
         } else if(strcmp(command, "df") == 0){
-            displayDiskInfo(freeBlocksHead);
+            displayDiskInfo(currVfsState);
             
         } else if(strcmp(command, "exit") == 0){
-            releaseDiskMemory(disk);
-            releaseFreeBlocks(freeBlocksHead);
-            releaseCurrentDirectoryMemory(cwd, &freeBlocksHead);
+            currVfsState->cwd = getRoot(currVfsState->cwd);
+            releaseMemory(currVfsState);
             printf("Memory released. Exiting program...\n");
             break;
         } else{

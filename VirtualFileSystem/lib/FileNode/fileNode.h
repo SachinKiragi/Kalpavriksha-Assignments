@@ -5,6 +5,8 @@
 #include "../FreeBlock/freeBlock.c"
 #include<string.h>
 
+typedef struct VfsState VfsState;
+
 typedef enum{
     FILENODE_EXISTS,
     FILE_NOT_FOUND,
@@ -37,15 +39,12 @@ statusCode insertNewFileNode(fileNode*, char*, char*);
 fileNode* getTail(fileNode*);
 statusCode iscurrentDeleteOperationValid(fileNode*, char*, char*);
 void releaseAllocatedBlocks(fileNode*, freeBlock**);
-statusCode deleteFileNode(fileNode* cwd, char*, char*, freeBlock**);
+statusCode deleteFileNode(VfsState*, char*, char*);
 fileNode* getNewWorkingDirectory(fileNode*, char*);
-fileNode* handleChangeDirectory(fileNode*, char*);
+void handleChangeDirectory(VfsState*, char*);
 void displaySubDirectoriesAndFiles(fileNode*);
 char* getPathOfCwd(fileNode*);
-void handleFileNodeInsertion(fileNode*, char*, char*);
-void handleFileNodeDeletion(fileNode*, char*, char*, freeBlock**);
-fileNode* initRootDirectory();
-char** initVirtualDisk();
-freeBlock* initFreeBlocks();
+void handleFileNodeInsertion(VfsState*, char*, char*);
+void handleFileNodeDeletion(VfsState*, char*, char*);
 
 #endif

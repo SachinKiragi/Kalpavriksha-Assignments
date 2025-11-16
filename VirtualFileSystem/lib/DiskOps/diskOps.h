@@ -1,13 +1,14 @@
 #ifndef DISKOPS_H
 #define DISKOPS_H
 
-#include "../fileNode/fileNode.c"
+#include "../FileNode/fileNode.c"
+#include "../vfsState.h"
 
 char* getContent(char*);
-void displayFileContent(fileNode*, char*, char**);
+void displayFileContent(VfsState*, char*);
 statusCode appendIntoDiskHelper(char*, fileNode*, char**, int);
-statusCode appendContentIntoDisk(fileNode*, char*, char*, freeBlock**, char**);
-void handleWriteCommand(fileNode*, char*, char*, char*, freeBlock**, char**);
-void displayDiskInfo(freeBlock*);
+statusCode appendContentIntoDisk(VfsState*, char*, char*);
+void handleWriteCommand(VfsState*, char*, char*, char*);
+void displayDiskInfo(VfsState*);
 
 #endif

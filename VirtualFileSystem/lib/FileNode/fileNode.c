@@ -1,4 +1,5 @@
 #include "fileNode.h"
+#include "../vfsState.h"
 
 void displaystatus(statusCode status){
     switch(status){
@@ -121,7 +122,9 @@ void releaseAllocatedBlocks(fileNode* currFileNode, freeBlock** freeBlocksHead){
 }
 
 // Function which remover fileNode  (exectuted for cmd 'rmdir docs' or 'delete notes.txt')
-statusCode deleteFileNode(fileNode* cwd, char* name, char* command, freeBlock** freeBlocksHead){
+statusCode deleteFileNode(VfsState* currVfsState, char* name, char* command){
+    fileNode* cwd = currVfsState->cwd;
+    freeBlock** freeBlocksHead = &currVfsState->freeBlocksHead;
     if(cwd == NULL){
         return EMPTY_DIRECTORY;
     }
@@ -162,6 +165,7 @@ statusCode deleteFileNode(fileNode* cwd, char* name, char* command, freeBlock** 
     } else{
         status = strcmp(command, "rmdir") ? DIRECTORY_NOT_FOUND : FILE_NOT_FOUND;
     }
+    currVfsState->cwd = cwd;
     return status;
 }
 
@@ -181,8 +185,9 @@ fileNode* getNewWorkingDirectory(fileNode* cwd, char *name){
 }
 
 // Function which returns new cwd -> (exectuted for cmd 'cd docs')
-fileNode* handleChangeDirectory(fileNode* cwd, char *name){
+void handleChangeDirectory(VfsState* currVfsState, char *name){
     fileNode* newCwd = NULL;
+    fileNode* cwd = currVfsState->cwd;
     if(strcmp(name, "..") == 0){
         if(cwd->parent != NULL){
             cwd = cwd->parent;
@@ -195,7 +200,7 @@ fileNode* handleChangeDirectory(fileNode* cwd, char *name){
             cwd = newCwd;
         }
     }
-    return cwd;
+    currVfsState->cwd = cwd;
 }
 
 // Function to print all subdirectories and files within cwd (exectuted for cmd 'ls')
@@ -236,7 +241,8 @@ char* getPathOfCwd(fileNode* cwd){
     return finalPath;
 }
 
-void handleFileNodeInsertion(fileNode* cwd, char* name, char *command){
+void handleFileNodeInsertion(VfsState* currVfsState, char* name, char *command){
+    fileNode* cwd = currVfsState->cwd;
     statusCode status = insertNewFileNode(cwd, name, command);
     if(status == SUCCESS){
         printf("%s '%s' created successfully.\n", strcmp(command, "mkdir") == 0 ? "Directory" : "File", name);
@@ -245,8 +251,8 @@ void handleFileNodeInsertion(fileNode* cwd, char* name, char *command){
     }
 }
 
-void handleFileNodeDeletion(fileNode* cwd, char* name, char *command, freeBlock** freeBlocksHead){
-    statusCode status = deleteFileNode(cwd, name, command, freeBlocksHead);
+void handleFileNodeDeletion(VfsState* currVfsState, char* name, char *command){
+    statusCode status = deleteFileNode(currVfsState, name, command);
     if(status == SUCCESS){
         printf("%s successfully.\n", strcmp(command, "rmdir") == 0 ? "Directory removed" : "File deleted");
     } else{

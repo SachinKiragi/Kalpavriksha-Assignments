@@ -24,11 +24,9 @@ freeBlock* insertAtTailOfFreeBlocks(freeBlock* head, int index){
 }
 
 freeBlock* deleteAtHeadOfFreeBlocks(freeBlock* head){
-    freeBlock* temp = NULL;
     if(head == NULL){
         return head;
-    } else{
-        temp = head;
+    } else {
         head = head->next;
         if(head != NULL){
             head->prev = NULL;

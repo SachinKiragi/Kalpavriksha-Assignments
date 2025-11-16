@@ -8,7 +8,9 @@ char** initVirtualDisk();
 freeBlock* initFreeBlocks();
 void releaseDiskMemory(char**);
 void releaseFreeBlocks(freeBlock*);
-void releaseCurrentDirectoryMemory(fileNode*, freeBlock**);
+void releaseCurrentDirectoryMemory(VfsState*);
 void initVirtualFileSystem();
-
+void releaseMemory(VfsState*);
+void initMemory(VfsState*);
+fileNode* getRoot(fileNode*);
 #endif

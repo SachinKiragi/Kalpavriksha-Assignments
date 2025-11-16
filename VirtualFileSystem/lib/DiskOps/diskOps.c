@@ -16,8 +16,10 @@ char* getContent(char* line){
 }
 
 
-void displayFileContent(fileNode* cwd, char* name, char** disk){
+void displayFileContent(VfsState* currVfsState, char* name){
+    fileNode* cwd = currVfsState->cwd;
     fileNode* currFileNode = getFileNode(cwd, name);
+    char** disk = currVfsState->disk;
     if(currFileNode == NULL){
         printf("File not found!\n");
         return;
@@ -39,7 +41,6 @@ void displayFileContent(fileNode* cwd, char* name, char** disk){
             }
         }
     }
-    
     printf("\n");
 }
 
@@ -65,9 +66,13 @@ statusCode appendIntoDiskHelper(char* content, fileNode* currFileNode, char **di
 }
 
 
-statusCode appendContentIntoDisk(fileNode* cwd, char* fileName, char* content, freeBlock** freeBlocksHead, char** disk){
+statusCode appendContentIntoDisk(VfsState* currVfsState, char* fileName, char* content){
+    fileNode* cwd = currVfsState->cwd;
+    freeBlock** freeBlocksHead = &currVfsState->freeBlocksHead;
+    char** disk = currVfsState->disk;
 
     fileNode* currFileNode = getFileNode(cwd, fileName);
+
     statusCode status = INIT;
     if(currFileNode == NULL || currFileNode->isFile == false){
         status = FILE_NOT_FOUND;
@@ -91,7 +96,8 @@ statusCode appendContentIntoDisk(fileNode* cwd, char* fileName, char* content, f
 }
 
 
-void handleWriteCommand(fileNode* cwd, char* command, char *name, char* line, freeBlock** freeBlocksHead, char** disk){
+void handleWriteCommand(VfsState* currVfsState, char* command, char *name, char* line){
+
     while(strlen(line) > MAX_CONTENT_LENGTH){
         printf("Content Legth exceeded\n");
         return;
@@ -99,16 +105,17 @@ void handleWriteCommand(fileNode* cwd, char* command, char *name, char* line, fr
     char* content = getContent(line);
     content[strlen(content)] = 0;
     statusCode status = INIT;
-    status = appendContentIntoDisk(cwd, name, content, freeBlocksHead, disk);
+    status = appendContentIntoDisk(currVfsState, name, content);
     if(status == SUCCESS){
-        printf("Data written successfully (size=%d bytes). \n", strlen(content)+1);
+        printf("Data written successfully (size=%d bytes). \n", (int)strlen(content)+1);
     } else{
         displaystatus(status);
     }
 }
 
 
-void displayDiskInfo(freeBlock* freeBlocksHead){
+void displayDiskInfo(VfsState* currVfsState){
+    freeBlock* freeBlocksHead = currVfsState->freeBlocksHead;
     int noOfFreeBlocks = getNumberOfFreeBlocks(freeBlocksHead);
     int totalNumberOfBlocks = MAX_NUMBER_OF_BLOCKS;
     int usedBlocks = totalNumberOfBlocks - noOfFreeBlocks;
