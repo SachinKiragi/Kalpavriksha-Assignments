@@ -1,0 +1,11 @@
+#ifndef MACROS_H
+#define MACROS_H
+
+#define MIN_PLAYER_ID 1
+#define MAX_PLAYER_ID 1000
+#define MIN_NUM_OF_PLAYERS 11
+#define MAX_NUM_OF_PLAYERS 50
+#define MAX_NAME_LENGTH 50
+#define MAX_ROLE_LENGTH 20
+
+#endif
