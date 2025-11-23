@@ -49,7 +49,7 @@ int initLru(){
     while(argsLen != 2){
         fgets(line, sizeof(line), stdin);
         argsLen = sscanf(line, "%s %d", cmd, &capacity);
-        if((strcmp(cmd, "createCache") != 0 ) || argsLen != 2){
+        if((strcmp(cmd, "createCache") != 0 ) || argsLen != 2 || capacity < MIN_CAPACITY || capacity > MAX_CAPACITY){
             printf("Invalid Input!\n");
             argsLen = 0;
         }
