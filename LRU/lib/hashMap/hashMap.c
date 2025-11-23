@@ -1,0 +1,132 @@
+#include "hashMap.h"
+
+int hash(int key, int capacity){
+    int bucketIndex = key % capacity;
+    return bucketIndex;
+}
+
+HashNode* createHashNode(Node* node){
+    HashNode* newHashNode = (HashNode*) calloc (1, sizeof(HashNode));
+    if(newHashNode){
+        newHashNode->node = node;
+    }
+    return newHashNode;
+}
+
+HashNode* getHashNodeFromBucketIndex(HashNode* listHead, int key){
+    HashNode* currHashNode = listHead;
+    while(currHashNode && currHashNode->node){
+        if(currHashNode->node->key == key){
+            return currHashNode;
+        }
+        currHashNode = currHashNode->next;
+    }
+    return NULL;
+}
+
+HashNode* getHashNode(int key, HashMap* map){
+    int bucketIndex = hash(key, map->capacity);
+    HashNode* tempHashNode = getHashNodeFromBucketIndex(map->hashArray[bucketIndex], key);
+    return tempHashNode;
+}
+
+HashNode* insertIntoBucketIndex(HashNode* listHead, Node* node){
+    HashNode* newHashNode = createHashNode(node);
+    if(newHashNode == NULL){
+        printf("Error: Failed to allocated memory\n");
+        return listHead;
+    }
+    if(listHead == NULL){
+        listHead = newHashNode;
+    } else{
+        newHashNode->next = listHead;
+        listHead->prev = newHashNode;
+        listHead = newHashNode;
+    }
+    return listHead;
+}
+
+void insertNodeInMap(Node* node, HashMap* map){
+    int bucketIndex = hash(node->key, map->capacity);
+    map->hashArray[bucketIndex] = insertIntoBucketIndex(map->hashArray[bucketIndex], node);
+}
+
+
+void removeNodeByKey(int key, HashMap* map){
+    int bucketIndex = hash(key, map->capacity);
+    HashNode* hashNodeToremove= getHashNodeFromBucketIndex(map->hashArray[bucketIndex], key);
+    HashNode* prevHashNode = hashNodeToremove->prev;
+    HashNode* nextHashNode = hashNodeToremove->next;
+    if(prevHashNode == NULL){
+        map->hashArray[bucketIndex] = map->hashArray[bucketIndex]->next;
+    } else{
+        prevHashNode->next = nextHashNode;
+    }
+    if(nextHashNode){
+        nextHashNode->prev = prevHashNode;
+    }
+}
+
+void modifyMap(Node* oldNode, Node* newNode, HashMap* map){
+    map->removeNodeByKey(oldNode->key, map);
+    map->insertNodeInMap(newNode, map);
+}
+
+
+Node* getNodeFromMap(int key, HashMap* map){
+    HashNode* tempHashNode = getHashNode(key, map);
+    if(tempHashNode == NULL){
+        return NULL;
+    }
+    Node* tempNode = tempHashNode->node;
+    return tempNode;
+}
+
+
+void releaseCurrentBucketList(HashNode* listHead){
+    HashNode* currHashNode = listHead;
+    HashNode* hashNodeToDelete = NULL;
+
+    while(currHashNode){
+        hashNodeToDelete = currHashNode;
+        currHashNode = currHashNode->next;
+        free(hashNodeToDelete);
+        hashNodeToDelete = NULL;
+    }
+}
+
+void releaseMapMemory(HashMap* map){
+    for(int i = 0; i < map->capacity; i++){
+        releaseCurrentBucketList(map->hashArray[i]);
+    }
+    free(map);
+    map = NULL;
+}
+
+HashMap* initMap(int capicity){
+
+    HashMap* map = (HashMap*) calloc (1, sizeof(HashMap));
+    if(map == NULL){
+        return NULL;
+    }
+    map->capacity = capicity;
+    map->insertNodeInMap = &insertNodeInMap;
+    map->removeNodeByKey = &removeNodeByKey;
+    map->getNodeFromMap = &getNodeFromMap;
+    map->modifyMap = &modifyMap;
+    map->releaseMapMemory = &releaseMapMemory;
+
+    map->hashArray = (HashNode**) malloc (map->capacity * sizeof(HashNode*));
+    if(map->hashArray == NULL){
+        map->releaseMapMemory(map);
+        return NULL;
+    }
+    for(int i = 0; i < map->capacity; i++){
+        map->hashArray[i] = (HashNode*) calloc (1, sizeof(HashNode));
+        if(map->hashArray[i] == NULL){
+            map->releaseMapMemory(map);
+            return NULL;
+        }
+    }
+    return map;
+}
