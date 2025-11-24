@@ -1,6 +1,6 @@
-#include "VirtualFileSystem/virtualFileSystem.c"
+#include "playerPerformanceAnalyzer/playerPerformanceAnalyzer.c"
 
 int main(){
-    initVirtualFileSystem();
+    initPerformanceAnalyzer();
     return 0;
 }
