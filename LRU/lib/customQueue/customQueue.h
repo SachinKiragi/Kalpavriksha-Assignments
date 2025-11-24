@@ -11,7 +11,7 @@
 Node* createNewNode(int key, char* value);
 Node* insertNode(int key, char* value, Queue *queue);
 Node* removeNode(Node* nodeToDelete, Queue* queue);
-Node* releaseQueueMemory(Queue* queue);
+void releaseQueueMemory(Queue* queue);
 Queue* initQueue(int capacity);
 
 #endif

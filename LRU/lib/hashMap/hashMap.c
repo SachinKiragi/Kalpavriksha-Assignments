@@ -64,7 +64,7 @@ void insertNodeInMap(Node* node, HashMap* map){
 
 void removeNodeByKey(int key, HashMap* map){
     int bucketIndex = hash(key, map->capacity);
-    HashNode* hashNodeToremove= getHashNodeFromBucketIndex(map->hashArray[bucketIndex], key);
+    HashNode* hashNodeToremove = getHashNodeFromBucketIndex(map->hashArray[bucketIndex], key);
     HashNode* prevHashNode = hashNodeToremove->prev;
     HashNode* nextHashNode = hashNodeToremove->next;
     if(prevHashNode == NULL){

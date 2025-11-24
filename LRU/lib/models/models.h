@@ -22,7 +22,7 @@ struct Queue{
     Node* rear;   
     Node* (*insertNode)(int, char*, Queue*);
     Node* (*removeNode)(Node*, Queue*);
-    Node* (*releaseQueueMemory)(Queue*);
+    void (*releaseQueueMemory)(Queue*);
 };
 
 typedef struct HashNode{

@@ -28,29 +28,29 @@ Node* insertNode(int key, char* value, Queue *queue){
 }
 
 Node* removeNode(Node* nodeToDelete, Queue* queue){
-    Node* prev = nodeToDelete->prev;
-    Node* next = nodeToDelete->next;
-    if(prev == NULL){
-        queue->front = next;
+    Node* prevNode = nodeToDelete->prev;
+    Node* nextNode = nodeToDelete->next;
+    if(prevNode == NULL){
+        queue->front = nextNode;
     } else{
-        prev->next = next;
+        prevNode->next = nextNode;
     }
 
-    if(next == NULL){
-        queue->rear = prev;
+    if(nextNode == NULL){
+        queue->rear = prevNode;
     } else{
-        next->prev = prev;
+        nextNode->prev = prevNode;
     }    
     queue->currSize--;
     return nodeToDelete;
 }
 
-Node* releaseQueueMemory(Queue* queue){
-    Node* curr = queue->front;
+void releaseQueueMemory(Queue* queue){
+    Node* currNode = queue->front;
     Node* nodeToDelete = NULL;
-    while(curr){
-        nodeToDelete = curr;
-        curr = curr->next;
+    while(currNode){
+        nodeToDelete = currNode;
+        currNode = currNode->next;
         free(nodeToDelete);
         nodeToDelete = NULL;
     }
