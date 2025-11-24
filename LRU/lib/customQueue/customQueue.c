@@ -27,7 +27,7 @@ Node* insertNode(int key, char* value, Queue *queue){
     return newNode;
 }
 
-Node* removeCurrentNode(Node* nodeToDelete, Queue* queue){
+Node* removeNode(Node* nodeToDelete, Queue* queue){
     Node* prev = nodeToDelete->prev;
     Node* next = nodeToDelete->next;
     if(prev == NULL){
@@ -44,7 +44,6 @@ Node* removeCurrentNode(Node* nodeToDelete, Queue* queue){
     queue->currSize--;
     return nodeToDelete;
 }
-
 
 Node* releaseQueueMemory(Queue* queue){
     Node* curr = queue->front;
@@ -63,7 +62,7 @@ Queue* initQueue(int capacity){
         return NULL;
     }
     queue->insertNode = &insertNode;
-    queue->removeCurrentNode = &removeCurrentNode;
+    queue->removeNode = &removeNode;
     queue->releaseQueueMemory = &releaseQueueMemory;
     queue->capacity = capacity;
     return queue;

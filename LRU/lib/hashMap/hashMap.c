@@ -8,26 +8,21 @@ int hash(int key, int capacity){
 HashNode* createHashNode(Node* node){
     HashNode* newHashNode = (HashNode*) calloc (1, sizeof(HashNode));
     if(newHashNode){
-        newHashNode->node = node;
+        newHashNode->key = node->key;
+        newHashNode->value = node;
     }
     return newHashNode;
 }
 
 HashNode* getHashNodeFromBucketIndex(HashNode* listHead, int key){
     HashNode* currHashNode = listHead;
-    while(currHashNode && currHashNode->node){
-        if(currHashNode->node->key == key){
+    while(currHashNode){
+        if(currHashNode->key == key){
             return currHashNode;
         }
         currHashNode = currHashNode->next;
     }
     return NULL;
-}
-
-HashNode* getHashNode(int key, HashMap* map){
-    int bucketIndex = hash(key, map->capacity);
-    HashNode* tempHashNode = getHashNodeFromBucketIndex(map->hashArray[bucketIndex], key);
-    return tempHashNode;
 }
 
 HashNode* insertIntoBucketIndex(HashNode* listHead, Node* node){
@@ -46,11 +41,26 @@ HashNode* insertIntoBucketIndex(HashNode* listHead, Node* node){
     return listHead;
 }
 
-void insertNodeInMap(Node* node, HashMap* map){
-    int bucketIndex = hash(node->key, map->capacity);
-    map->hashArray[bucketIndex] = insertIntoBucketIndex(map->hashArray[bucketIndex], node);
+bool updateHashNode(Node* newNode, HashMap* map){
+    int bucketIndex = hash(newNode->key, map->capacity);
+    HashNode* currHashNode = map->hashArray[bucketIndex];
+    while(currHashNode){
+        if(currHashNode->key == newNode->key){
+            currHashNode->value = newNode;
+            return true;
+        }
+        currHashNode = currHashNode->next;
+    }
+    return false;
 }
 
+void insertNodeInMap(Node* node, HashMap* map){
+    int bucketIndex = hash(node->key, map->capacity);
+    if(updateHashNode(node, map)){
+        return;
+    }
+    map->hashArray[bucketIndex] = insertIntoBucketIndex(map->hashArray[bucketIndex], node);
+}
 
 void removeNodeByKey(int key, HashMap* map){
     int bucketIndex = hash(key, map->capacity);
@@ -65,23 +75,24 @@ void removeNodeByKey(int key, HashMap* map){
     if(nextHashNode){
         nextHashNode->prev = prevHashNode;
     }
+    free(hashNodeToremove);
+    hashNodeToremove = NULL;
 }
 
-void modifyMap(Node* oldNode, Node* newNode, HashMap* map){
-    map->removeNodeByKey(oldNode->key, map);
-    map->insertNodeInMap(newNode, map);
+HashNode* getHashNode(int key, HashMap* map){
+    int bucketIndex = hash(key, map->capacity);
+    HashNode* tempHashNode = getHashNodeFromBucketIndex(map->hashArray[bucketIndex], key);
+    return tempHashNode;
 }
-
 
 Node* getNodeFromMap(int key, HashMap* map){
     HashNode* tempHashNode = getHashNode(key, map);
     if(tempHashNode == NULL){
         return NULL;
     }
-    Node* tempNode = tempHashNode->node;
+    Node* tempNode = tempHashNode->value;
     return tempNode;
 }
-
 
 void releaseCurrentBucketList(HashNode* listHead){
     HashNode* currHashNode = listHead;
@@ -113,7 +124,6 @@ HashMap* initMap(int capicity){
     map->insertNodeInMap = &insertNodeInMap;
     map->removeNodeByKey = &removeNodeByKey;
     map->getNodeFromMap = &getNodeFromMap;
-    map->modifyMap = &modifyMap;
     map->releaseMapMemory = &releaseMapMemory;
 
     map->hashArray = (HashNode**) malloc (map->capacity * sizeof(HashNode*));

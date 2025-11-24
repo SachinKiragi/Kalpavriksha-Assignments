@@ -4,15 +4,14 @@ void handlePut(Queue* queue, HashMap* map, int key, char* value){
     Node* existingNode = map->getNodeFromMap(key, map);
 
     if(existingNode){
-        queue->removeCurrentNode(existingNode, queue);
-        Node* insertedNode = queue->insertNode(key, value, queue);
-        map->modifyMap(existingNode, insertedNode, map);
-        return;
+        queue->removeNode(existingNode, queue);
     }
 
     if(queue->capacity == queue->currSize){
-        Node* deletedNode = queue->removeCurrentNode(queue->rear, queue);
+        Node* deletedNode = queue->removeNode(queue->rear, queue);
         map->removeNodeByKey(deletedNode->key, map);
+        free(deletedNode);
+        deletedNode = NULL;
     }
 
     Node* insertedNode = queue->insertNode(key, value, queue);
@@ -23,14 +22,15 @@ void handlePut(Queue* queue, HashMap* map, int key, char* value){
     map->insertNodeInMap(insertedNode, map);
 }
 
-
 void handleGet(Queue* queue, HashMap* map, int key){
     Node* node = map->getNodeFromMap(key, map);
     if(node){
-        queue->removeCurrentNode(node, queue);
+        Node* deletedNode = queue->removeNode(node, queue);
         Node* insertedNode = queue->insertNode(node->key, node->value, queue);
-        map->modifyMap(node, insertedNode, map);
+        map->insertNodeInMap(insertedNode, map);
         printf("\n%s\n\n", node->value);
+        free(deletedNode);
+        deletedNode = NULL;
     } else{
         printf("\nNULL\n\n");
     }
@@ -86,6 +86,5 @@ int initLru(){
             printf("Invalid Commands! Try Again\n");
         }
     }
-
     return 0;
 }

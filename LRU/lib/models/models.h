@@ -21,12 +21,13 @@ struct Queue{
     Node* front;
     Node* rear;   
     Node* (*insertNode)(int, char*, Queue*);
-    Node* (*removeCurrentNode)(Node*, Queue*);
+    Node* (*removeNode)(Node*, Queue*);
     Node* (*releaseQueueMemory)(Queue*);
 };
 
 typedef struct HashNode{
-    Node* node;
+    int key;
+    Node* value;
     struct HashNode* next;
     struct HashNode* prev;
 } HashNode;
@@ -36,7 +37,6 @@ typedef struct HashMap{
     int capacity;
     void (*insertNodeInMap)(Node*, HashMap*);
     Node* (*getNodeFromMap)(int, HashMap*);
-    void (*modifyMap)(Node*, Node*, HashMap*);
     void (*removeNodeByKey)(int, HashMap*);
     void (*releaseMapMemory)(HashMap*);
 } HashMap;
