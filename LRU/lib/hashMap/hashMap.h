@@ -20,7 +20,7 @@ HashNode* insertIntoBucketIndex(HashNode* listHead, Node* node);
 bool updateHashNode(Node* newNode, HashMap* map);
 void insertNodeInMap(Node* node, HashMap* map);
 
-void removeNodeByKey(int key, HashMap* map);
+bool removeNodeByKey(int key, HashMap* map);
 
 HashNode* getHashNode(int key, HashMap* map);
 Node* getNodeFromMap(int key, HashMap* map);

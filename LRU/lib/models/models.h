@@ -2,6 +2,7 @@
 #define MODELS_H
 
 #include "../macros.h"
+#include "stdbool.h"
 
 typedef struct Node Node;
 typedef struct Queue Queue;
@@ -29,7 +30,6 @@ typedef struct HashNode{
     int key;
     Node* value;
     struct HashNode* next;
-    struct HashNode* prev;
 } HashNode;
 
 typedef struct HashMap{
@@ -37,7 +37,7 @@ typedef struct HashMap{
     int capacity;
     void (*insertNodeInMap)(Node*, HashMap*);
     Node* (*getNodeFromMap)(int, HashMap*);
-    void (*removeNodeByKey)(int, HashMap*);
+    bool (*removeNodeByKey)(int, HashMap*);
     void (*releaseMapMemory)(HashMap*);
 } HashMap;
 

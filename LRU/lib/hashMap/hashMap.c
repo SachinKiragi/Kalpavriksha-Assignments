@@ -35,7 +35,6 @@ HashNode* insertIntoBucketIndex(HashNode* listHead, Node* node){
         listHead = newHashNode;
     } else{
         newHashNode->next = listHead;
-        listHead->prev = newHashNode;
         listHead = newHashNode;
     }
     return listHead;
@@ -62,21 +61,35 @@ void insertNodeInMap(Node* node, HashMap* map){
     map->hashArray[bucketIndex] = insertIntoBucketIndex(map->hashArray[bucketIndex], node);
 }
 
-void removeNodeByKey(int key, HashMap* map){
+bool removeNodeByKey(int key, HashMap* map){
     int bucketIndex = hash(key, map->capacity);
-    HashNode* hashNodeToremove = getHashNodeFromBucketIndex(map->hashArray[bucketIndex], key);
-    HashNode* prevHashNode = hashNodeToremove->prev;
-    HashNode* nextHashNode = hashNodeToremove->next;
+    HashNode* hashNodeToDelete = NULL;
+    HashNode* currHashNode = map->hashArray[bucketIndex];
+    HashNode* prevHashNode = NULL;
+    HashNode* nextHashNode = NULL;
+
+    while(currHashNode){
+        if(currHashNode->key == key){
+            hashNodeToDelete = currHashNode;
+            break;
+        }
+        prevHashNode = currHashNode;
+        currHashNode = currHashNode->next;
+    }
+
+    if(currHashNode == NULL){
+        return false;
+    }
+    
+    nextHashNode = currHashNode->next;
     if(prevHashNode == NULL){
         map->hashArray[bucketIndex] = map->hashArray[bucketIndex]->next;
     } else{
         prevHashNode->next = nextHashNode;
     }
-    if(nextHashNode){
-        nextHashNode->prev = prevHashNode;
-    }
-    free(hashNodeToremove);
-    hashNodeToremove = NULL;
+    free(hashNodeToDelete);
+    hashNodeToDelete = NULL;
+    return true;
 }
 
 HashNode* getHashNode(int key, HashMap* map){
