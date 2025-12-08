@@ -2,6 +2,7 @@
 #define MODELS_H
 
 #include "../macros.h"
+#include "../strategy/playerPerfStrategy.h"
 
 typedef struct PlayerInfo {
     int id;
@@ -14,6 +15,7 @@ typedef struct PlayerInfo {
     int wickets;
     float economyRate;
     float performanceIndex;
+    playerPerformanceIndexStrategy performanceIndexStrategy; 
     struct PlayerInfo* next;
 } PlayerInfo;
 

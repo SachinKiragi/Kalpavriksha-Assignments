@@ -4,13 +4,12 @@
 #include "../data/Players_data.h"
 #include "../heapOps/heapOps.c"
 #include "../statusCodes/statusCodes.c"
+#include "../strategy/playerCategories.c"
+
 #include<stdbool.h>
 #include<string.h>
 
 StatusCode initmyTeams(TeamInfo**, int);
-float calculatePerformaceIndexForBatsman(PlayerInfo*);
-float calculatePerformaceIndexForBowler(PlayerInfo*);
-float calculatePerformaceIndexForAllRounder(PlayerInfo*);
 float calculatePerformaceIndex(PlayerInfo*);
 PlayerInfo* createPlayer(Player);
 int getRoleId(char*);

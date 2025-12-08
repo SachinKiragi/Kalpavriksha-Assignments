@@ -83,7 +83,7 @@ StatusCode isValidPlayer(PlayerInfo* player, TeamInfo** myTeams, int teamCount){
         status = INVALID_PLAYER_ID;
     } else if(strlen(player->name) == 0){
         status = INVALID_NAME;
-    } else if(player->role == "\0"){
+    } else if(strcmp(player->role, "\0") == 0){
         status = INVALID_ROLE;
     } else if(idExists(player->id, myTeams, teamCount)){
         status = ID_EXISTS;
@@ -107,10 +107,13 @@ PlayerInfo* getPlayer(){
     scanf("%d", &roleId);
     if(roleId == 1){
         strcpy(player->role, "Batsman");
+        player->performanceIndexStrategy = batsmanPerformanceIndexStrategy;
     } else if(roleId == 2){
         strcpy(player->role, "Bowler");
+        player->performanceIndexStrategy = bowlerPerformanceIndexStrategy;
     } else if(roleId == 3){
         strcpy(player->role, "All-rounder");
+        player->performanceIndexStrategy = allRounderPerformanceIndexStrategy;
     }
     printf("Total Runs: ");
     scanf("%d", &player->totalRuns);

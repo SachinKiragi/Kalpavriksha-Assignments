@@ -13,37 +13,13 @@ StatusCode initmyTeams(TeamInfo** myTeams, int teamCount){
      return SUCCESS;
 }
 
-float calculatePerformaceIndexForBatsman(PlayerInfo* player){
-    float batAvg = player->battingAverage;
-    float strikeRate = player->strikeRate;
-    float perfIndex = (float)(batAvg * strikeRate) / 100.0;
-    return perfIndex;
-}
-
-float calculatePerformaceIndexForBowler(PlayerInfo* player){
-    int wickets = player->wickets;
-    float ecoRate = player->economyRate;
-    float perfIndex = (wickets * 2) + (100 - ecoRate);
-    return perfIndex;
-}
-
-float calculatePerformaceIndexForAllRounder(PlayerInfo* player){
-    float batAvg = player->battingAverage;
-    float strikeRate = player->strikeRate;
-    int wickets = player->wickets;
-    float perfIndex = ((batAvg * strikeRate) / 100.0) + (wickets * 2);
-    return perfIndex;
-}
-
 float calculatePerformaceIndex(PlayerInfo* player){
-    float perfIndex = 0;
-    if(strcmp(player->role, "Batsman") == 0){
-        perfIndex = calculatePerformaceIndexForBatsman(player);
-    } else if(strcmp(player->role, "Bowler") == 0){
-        perfIndex = calculatePerformaceIndexForBowler(player);
-    } else{
-        perfIndex = calculatePerformaceIndexForAllRounder(player);
+    if(player->performanceIndexStrategy == NULL){
+        return 0.0;
     }
+    float perfIndex = 0;
+    perfIndex = player->performanceIndexStrategy(player);
+    return perfIndex;
 }
 
 PlayerInfo* createPlayer(Player player){
@@ -55,6 +31,13 @@ PlayerInfo* createPlayer(Player player){
     strcpy(currPlayer->name, player.name);
     strcpy(currPlayer->team, player.team);
     strcpy(currPlayer->role, player.role);
+    if(strcmp(currPlayer->role, "Batsman") == 0){
+        currPlayer->performanceIndexStrategy = batsmanPerformanceIndexStrategy;
+    } else if(strcmp(currPlayer->role, "Bowler") == 0){
+        currPlayer->performanceIndexStrategy = bowlerPerformanceIndexStrategy;   
+    } else{
+        currPlayer->performanceIndexStrategy = allRounderPerformanceIndexStrategy;
+    }
     currPlayer->totalRuns = player.totalRuns;
     currPlayer->battingAverage = player.battingAverage;
     currPlayer->strikeRate = player.strikeRate;

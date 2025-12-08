@@ -1,4 +1,5 @@
 *.txt
 .git
 *.exe
+*.out
 README.md
