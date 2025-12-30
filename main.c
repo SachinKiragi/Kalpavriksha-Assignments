@@ -1,6 +1,6 @@
-#include "VirtualFileSystem/virtualFileSystem.c"
+#include "LRU/lruCache.c"
 
 int main(){
-    initVirtualFileSystem();
+    initLru();
     return 0;
 }
